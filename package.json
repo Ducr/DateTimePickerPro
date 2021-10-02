@@ -1,0 +1,34 @@
+{
+  "name": "date-time-picker-pro",
+  "version": "1.0.0",
+  "description": "基于element-ui的DatePicker和DateTimePicker二次封装，可配置分钟、秒钟自定义步距的组件",
+  "main": "./dist/date-time-picker-pro.common.js",
+  "author": "ducrong@126.com",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "scripts": {
+    "build": "vue-cli-service build --target lib --dest dist ./index.js"
+  },
+  "dependencies": {
+    "element-ui": "^2.13.2",
+    "vue": "^2.5.16",
+    "vue-template-compiler": "^2.6.14"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "babel-helper-vue-jsx-merge-props": "^2.0.3",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-plugin-transform-vue-jsx": "^3.7.0",
+    "@vue/cli-service": "^4.5.13",
+    "babel-preset-env": "^1.7.0",
+    "chalk": "^4.1.1",
+    "eslint": "^7.28.0",
+    "eslint-plugin-vue": "^7.11.1",
+    "less": "^3.0.2",
+    "sass": "^1.26.10",
+    "sass-loader": "^9.0.2"
+  }
+}
