@@ -61,9 +61,11 @@
       @focus="handleFocus"
       @blur="handleBlur"
       class="el-range-input">
-    <slot name="range-separator">
+    <!-- Ducr：修复range-separator属性默认配置不起效果，进行判断显示 -->
+    <slot v-if="$slots['range-separator']" name="range-separator">
       <span class="el-range-separator">{{ rangeSeparator }}</span>
     </slot>
+    <span v-else class="el-range-separator">{{ rangeSeparator }}</span>
     <input
       autocomplete="off"
       :placeholder="endPlaceholder"
