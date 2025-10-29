@@ -30,5 +30,11 @@
     "less": "^3.0.2",
     "sass": "^1.26.10",
     "sass-loader": "^9.0.2"
-  }
+  },
+  "keywords": [
+    "vue",
+    "element-ui",
+    "date-time-picker-pro",
+    "DateTimePickerPro"
+  ]
 }
