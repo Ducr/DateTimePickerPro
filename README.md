@@ -38,7 +38,7 @@ Vue.use(DateTimePickerPro)
 ```html
 <template>
   <!-- 单个日期时间 -->
-  <ys-date-time-picker-pro
+  <date-time-picker-pro
     v-model="singleDateTime"
     type="datetime"
     placeholder="选择日期时间"
@@ -47,10 +47,9 @@ Vue.use(DateTimePickerPro)
     :custom-second-step="10"
     value-format="yyyy/MM/dd HH:mm:ss"
     format="yyyy/MM/dd HH:mm:ss"
-  ></ys-date-time-picker-pro>
-  </div>
+  ></date-time-picker-pro>
   <!-- 日期时间范围 -->
-  <ys-date-time-picker-pro
+  <date-time-picker-pro
     v-model="multipleDateTime"
     type="datetimerange"
     :default-time="['09:00:00', '19:00:00']"
@@ -61,7 +60,7 @@ Vue.use(DateTimePickerPro)
     end-placeholder="结束日期"
     value-format="yyyy/MM/dd HH:mm:ss"
     format="yyyy/MM/dd HH:mm:ss"
-  ></ys-date-time-picker-pro>
+  ></date-time-picker-pro>
 </template>
 
 <script>
