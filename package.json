@@ -1,6 +1,6 @@
 {
   "name": "date-time-picker-pro",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "基于element-ui的DatePicker和DateTimePicker二次封装，可配置分钟、秒钟自定义步距的组件",
   "main": "./dist/date-time-picker-pro.common.js",
   "author": "ducrong@126.com",
