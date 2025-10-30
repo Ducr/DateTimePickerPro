@@ -16,6 +16,8 @@
               ref="minSpinner"
               :show-seconds="showSeconds"
               :am-pm-mode="amPmMode"
+              :custom-minute-step="customMinuteStep"
+              :custom-second-step="customSecondStep"
               @change="handleMinChange"
               :arrow-control="arrowControl"
               @select-range="setMinSelectionRange"
@@ -32,6 +34,8 @@
               ref="maxSpinner"
               :show-seconds="showSeconds"
               :am-pm-mode="amPmMode"
+              :custom-minute-step="customMinuteStep"
+              :custom-second-step="customSecondStep"
               @change="handleMaxChange"
               :arrow-control="arrowControl"
               @select-range="setMaxSelectionRange"
@@ -86,6 +90,11 @@
     mixins: [Locale],
 
     components: { TimeSpinner },
+
+    props: {
+      customMinuteStep: [String, Number], // 分钟数自定义步距
+      customSecondStep: [String, Number], // 秒钟数自定义步距
+    },
 
     computed: {
       showSeconds() {
