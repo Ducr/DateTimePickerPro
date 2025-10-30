@@ -137,26 +137,34 @@
     watch: {
       value(value) {
         if (Array.isArray(value)) {
+          // Ducr：在外部传入值变化时，确保 minDat 与 maxDate 的年月日为同一天，解决跨天时间戳比对错误的问题
+          value = this.normalizeDates(value);
           // Ducr：代码健壮性判断，若传入值为空，则保持原有值不变
           this.minDate = new Date(value[0] ? value[0] : this.minDate);
           this.maxDate = new Date(value[1] ? value[1] : this.maxDate);
           // Ducr：在input手动输入时，确保 minDate 不大于 maxDate，并对应调整当前已选时间的面板被高亮选中
-          if (this.maxDate && this.minDate && this.minDate.getTime() > this.maxDate.getTime()) {
-            this.minDate = new Date(this.maxDate);
-            this.$nextTick(() => {
-              this.$refs.minSpinner.adjustSpinners();
-            });
-          }
           if (this.maxDate && this.maxDate.getTime() < this.minDate.getTime()) {
             this.maxDate = new Date(this.minDate);
+            this.handleChange();
             this.$nextTick(() => {
+              this.$refs.minSpinner.adjustSpinners();
+              this.$refs.maxSpinner.adjustSpinners();
+            });
+          }
+          if (this.maxDate && this.minDate && this.minDate.getTime() > this.maxDate.getTime()) {
+            this.minDate = new Date(this.maxDate);
+            this.handleChange();
+            this.$nextTick(() => {
+              this.$refs.minSpinner.adjustSpinners();
               this.$refs.maxSpinner.adjustSpinners();
             });
           }
         } else {
           if (Array.isArray(this.defaultValue)) {
-            this.minDate = new Date(this.defaultValue[0]);
-            this.maxDate = new Date(this.defaultValue[1]);
+            // Ducr：在外部传入默认值时，确保 minDat 与 maxDate 的年月日为同一天，解决跨天时间戳比对错误的问题
+            const defaultValue = this.normalizeDates(this.defaultValue);
+            this.minDate = new Date(defaultValue[0]);
+            this.maxDate = new Date(defaultValue[1]);
           } else if (this.defaultValue) {
             this.minDate = new Date(this.defaultValue);
             this.maxDate = advanceTime(new Date(this.defaultValue), 60 * 60 * 1000);
@@ -221,6 +229,38 @@
           this.$refs.maxSpinner.selectableRange = [[this.minDate, maxTimeOfDay(this.maxDate)]];
           this.$emit('pick', [this.minDate, this.maxDate], true);
         }
+      },
+
+      /**
+       * @description 将日期的年月日调整为同一天，保持原有的时分秒，element-ui默认处理的日期会出现跨天问题
+       * @author Ducr
+       * @param { Array } dates 日期数组
+       * @param { Date } baseDate 基准日期，默认当天
+       * @return { Array } 调整后的日期数组
+       */
+      normalizeDates(dates, baseDate = new Date()) {
+        if (!Array.isArray(dates) || dates.length === 0) {
+          return dates;
+        }
+        const baseYear = baseDate.getFullYear();
+        const baseMonth = baseDate.getMonth();
+        const baseDay = baseDate.getDate();
+        return dates.map(date => {
+          const curDate = new Date(date);
+          const hours = curDate.getHours();
+          const minutes = curDate.getMinutes();
+          const seconds = curDate.getSeconds();
+          const milliseconds = curDate.getMilliseconds();
+          return new Date(
+            baseYear,
+            baseMonth,
+            baseDay,
+            hours,
+            minutes,
+            seconds,
+            milliseconds
+          );
+        });
       },
 
       setMinSelectionRange(start, end) {
