@@ -778,9 +778,13 @@ export default {
           if (this.picker && this.picker.$children && this.picker.$children.length) {
             const value = this.parseString(this.displayValue);
             const { $children = [] } = this.picker;
+            // DateTimePickerPro的timeSpinner
             const timeSpinnerVm = $children.find(item => item.$refs.spinner);
-            if (timeSpinnerVm && timeSpinnerVm.$refs && timeSpinnerVm.$refs.spinner) {
-              const { minutesList = [], secondsList = [], queryApproximate = ((val, list = []) => val) } = timeSpinnerVm.$refs.spinner || {};
+            // TimePickerPro的timeSpinner
+            const timeSpinnerCom = $children.length === 1 && $children[0].$options._componentTag === 'time-spinner' ? $children[0] : null;
+            const spinnerVm = (timeSpinnerVm && timeSpinnerVm.$refs && timeSpinnerVm.$refs.spinner) || timeSpinnerCom;
+            if (spinnerVm) {
+              const { minutesList = [], secondsList = [], queryApproximate = ((val, list = []) => val) } = spinnerVm || {};
               const currDate = value ? value : new Date();
               let currMinNum = queryApproximate(+formatDate(currDate, 'mm'), minutesList);
               let currSecNum = queryApproximate(+formatDate(currDate, 'ss'), secondsList);
@@ -788,7 +792,7 @@ export default {
               parsedDate.setMinutes(('0' + currMinNum).slice(-2));
               parsedDate.setSeconds(('0' + currSecNum).slice(-2));
               this.picker.value = parsedDate;
-              // this.picker.adjustSpinners();
+              timeSpinnerCom && this.picker.adjustSpinners();
               if (this.isValidValue(parsedDate)) {
                 this.emitInput(parsedDate);
                 this.userInput = null;
@@ -804,9 +808,13 @@ export default {
               const value = timeArr[0];
               if (!value) return;
               const { $children = [] } = this.picker;
+              // DateTimePickerPro的timeSpinner
               const timeSpinnerVm = $children.find(item => item.$refs.spinner);
-              if (timeSpinnerVm && timeSpinnerVm.$refs && timeSpinnerVm.$refs.spinner) {
-                const { minutesList = [], secondsList = [], queryApproximate = ((val, list = []) => val) } = timeSpinnerVm.$refs.spinner || {};
+              // TimePickerPro的timeSpinner
+              const timeSpinnerCom = $children.length === 2 && $children[0].$options._componentTag === 'time-spinner' ? $children[0] : null;
+              const spinnerVm = (timeSpinnerVm && timeSpinnerVm.$refs && timeSpinnerVm.$refs.spinner) || timeSpinnerCom;
+              if (spinnerVm) {
+                const { minutesList = [], secondsList = [], queryApproximate = ((val, list = []) => val) } = spinnerVm || {};
                 const currDate = value ? value : new Date();
                 let currMinNum = queryApproximate(+formatDate(currDate, 'mm'), minutesList);
                 let currSecNum = queryApproximate(+formatDate(currDate, 'ss'), secondsList);
@@ -816,6 +824,7 @@ export default {
                 this.userInput = [this.formatToString(parsedDate), this.displayValue[1]];
                 const newValue = [parsedDate, this.picker.value && this.picker.value[1]];
                 this.picker.value = newValue;
+                timeSpinnerCom && this.picker.adjustSpinners();
                 if (this.isValidValue(newValue)) {
                   this.emitInput(newValue);
                   this.userInput = null;
@@ -827,9 +836,13 @@ export default {
               const value = timeArr[1];
               if (!value) return;
               const { $children = [] } = this.picker;
+              // DateTimePickerPro的timeSpinner
               const timeSpinnerVm = $children.find(item => item.$refs.spinner);
-              if (timeSpinnerVm && timeSpinnerVm.$refs && timeSpinnerVm.$refs.spinner) {
-                const { minutesList = [], secondsList = [], queryApproximate = ((val, list = []) => val) } = timeSpinnerVm.$refs.spinner || {};
+              // TimePickerPro的timeSpinner
+              const timeSpinnerCom = $children.length === 2 && $children[1].$options._componentTag === 'time-spinner' ? $children[1] : null;
+              const spinnerVm = (timeSpinnerVm && timeSpinnerVm.$refs && timeSpinnerVm.$refs.spinner) || timeSpinnerCom;
+              if (spinnerVm) {
+                const { minutesList = [], secondsList = [], queryApproximate = ((val, list = []) => val) } = spinnerVm || {};
                 const currDate = value ? value : new Date();
                 let currMinNum = queryApproximate(+formatDate(currDate, 'mm'), minutesList);
                 let currSecNum = queryApproximate(+formatDate(currDate, 'ss'), secondsList);
@@ -839,6 +852,7 @@ export default {
                 this.userInput = [this.displayValue[0], this.formatToString(parsedDate)];
                 const newValue = [this.picker.value && this.picker.value[0], parsedDate];
                 this.picker.value = newValue;
+                timeSpinnerCom && this.picker.adjustSpinners();
                 if (this.isValidValue(newValue)) {
                   this.emitInput(newValue);
                   this.userInput = null;
