@@ -137,8 +137,22 @@
     watch: {
       value(value) {
         if (Array.isArray(value)) {
-          this.minDate = new Date(value[0]);
-          this.maxDate = new Date(value[1]);
+          // Ducr：代码健壮性判断，若传入值为空，则保持原有值不变
+          this.minDate = new Date(value[0] ? value[0] : this.minDate);
+          this.maxDate = new Date(value[1] ? value[1] : this.maxDate);
+          // Ducr：在input手动输入时，确保 minDate 不大于 maxDate，并对应调整当前已选时间的面板被高亮选中
+          if (this.maxDate && this.minDate && this.minDate.getTime() > this.maxDate.getTime()) {
+            this.minDate = new Date(this.maxDate);
+            this.$nextTick(() => {
+              this.$refs.minSpinner.adjustSpinners();
+            });
+          }
+          if (this.maxDate && this.maxDate.getTime() < this.minDate.getTime()) {
+            this.maxDate = new Date(this.minDate);
+            this.$nextTick(() => {
+              this.$refs.maxSpinner.adjustSpinners();
+            });
+          }
         } else {
           if (Array.isArray(this.defaultValue)) {
             this.minDate = new Date(this.defaultValue[0]);
@@ -171,17 +185,38 @@
       },
 
       handleMinChange(date) {
+        // Ducr：在点击面板修改时，确保 minDate 不大于 maxDate，并对应调整当前已选时间的面板被高亮选中
+        const _minDate = clearMilliseconds(date);
+        if (!this.maxDate || this.maxDate && this.maxDate.getTime() < _minDate.getTime()) {
+          this.maxDate = new Date(_minDate);
+          this.$nextTick(() => {
+            this.$refs.maxSpinner.adjustSpinners();
+          });
+        }
         this.minDate = clearMilliseconds(date);
         this.handleChange();
       },
 
       handleMaxChange(date) {
+        // Ducr：在点击面板修改时，确保 minDate 不大于 maxDate，并对应调整当前已选时间的面板被高亮选中
+        const _maxDate = clearMilliseconds(date);
+        if (this.maxDate && this.minDate && this.minDate.getTime() > _maxDate.getTime()) {
+          this.minDate = new Date(_maxDate);
+          this.$nextTick(() => {
+            this.$refs.minSpinner.adjustSpinners();
+          });
+        }
         this.maxDate = clearMilliseconds(date);
         this.handleChange();
       },
 
       handleChange() {
-        if (this.isValidValue([this.minDate, this.maxDate])) {
+        if (
+          // Ducr: 原有逻辑，确保 minDate 与 maxDate 为合法值
+          this.isValidValue([this.minDate, this.maxDate]) ||
+          // Ducr: 当 minDate 与 maxDate 为非法值时，前面change事件中已调整二者相等，确保二者相等时也能触发 pick 事件
+          (!this.isValidValue([this.minDate, this.maxDate]) && this.minDate.getTime() === this.maxDate.getTime())
+      ) {
           this.$refs.minSpinner.selectableRange = [[minTimeOfDay(this.minDate), this.maxDate]];
           this.$refs.maxSpinner.selectableRange = [[this.minDate, maxTimeOfDay(this.maxDate)]];
           this.$emit('pick', [this.minDate, this.maxDate], true);
