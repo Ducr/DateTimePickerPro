@@ -61,6 +61,7 @@
 
 <script type="text/babel">
   import {
+    formatDate,
     parseDate,
     limitTimeRange,
     modifyDate,
@@ -142,6 +143,11 @@
           // Ducr：代码健壮性判断，若传入值为空，则保持原有值不变
           this.minDate = new Date(value[0] ? value[0] : this.minDate);
           this.maxDate = new Date(value[1] ? value[1] : this.maxDate);
+          // Ducr：在使用箭头控制时，确保分钟、秒钟数为步距数，非使用箭头控制时，该逻辑会导致滚动选择的值被重置
+          if (this.arrowControl) {
+            this.minDate && this.handleValidateTimeNumAndFormat('minSpinner', 'minDate');
+            this.maxDate && this.handleValidateTimeNumAndFormat('maxSpinner', 'maxDate');
+          }
           // Ducr：在input手动输入时，确保 minDate 不大于 maxDate，并对应调整当前已选时间的面板被高亮选中
           if (this.maxDate && this.maxDate.getTime() < this.minDate.getTime()) {
             this.maxDate = new Date(this.minDate);
@@ -165,6 +171,11 @@
             const defaultValue = this.normalizeDates(this.defaultValue);
             this.minDate = new Date(defaultValue[0]);
             this.maxDate = new Date(defaultValue[1]);
+            // Ducr：在使用箭头控制时，确保分钟、秒钟数为步距数，非使用箭头控制时，该逻辑会导致滚动选择的值被重置
+            if (this.arrowControl) {
+              this.minDate && this.handleValidateTimeNumAndFormat('minSpinner', 'minDate');
+              this.maxDate && this.handleValidateTimeNumAndFormat('maxSpinner', 'maxDate');
+            }
           } else if (this.defaultValue) {
             this.minDate = new Date(this.defaultValue);
             this.maxDate = advanceTime(new Date(this.defaultValue), 60 * 60 * 1000);
@@ -326,7 +337,31 @@
           event.preventDefault();
           return;
         }
-      }
+      },
+
+      /**
+       * @description 处理分钟、秒钟数为非步距数时，进行合法化处理
+       * @author Ducr
+       * @param { String } pickerType 实例名的key，minSpinner还是maxSpinner
+       * @param { String } dateKey 时间值的key，minDate还是maxDate
+       */
+      handleValidateTimeNumAndFormat(pickerType, dateKey) {
+        if (this.$refs[pickerType]) {
+          const timeSpinnerVm = this.$refs[pickerType];
+          const { minutesList = [], secondsList = [], queryApproximate = ((val, list = []) => val) } = timeSpinnerVm;
+          const currDate = this[dateKey] ? this[dateKey] : new Date();
+          let currMinNum = queryApproximate(+formatDate(currDate, 'mm'), minutesList);
+          let currSecNum = queryApproximate(+formatDate(currDate, 'ss'), secondsList);
+          const parsedDate = new Date(currDate);
+          parsedDate.setMinutes(('0' + currMinNum).slice(-2));
+          parsedDate.setSeconds(('0' + currSecNum).slice(-2));
+          this[dateKey] = parsedDate;
+          // Ducr：此修改会导致直接修改实例props，报Vue警告
+          // this.$refs[pickerType].date = parsedDate;
+          this.$refs[pickerType].value = parsedDate;
+          this.$refs[pickerType].adjustSpinners();
+        }
+      },
     }
   };
 </script>
